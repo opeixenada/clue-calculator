@@ -1,10 +1,13 @@
 package clue.calculator.http
 
+import java.time.ZonedDateTime
+
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.Route.seal
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import clue.calculator.models.Event
+import clue.calculator.models.Symptom._
 import clue.calculator.state.State
 import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.matchers.must.Matchers
@@ -20,11 +23,15 @@ class ServiceTest
     with ArgumentMatchersSugar {
 
   trait BasicScenario {
+
+    val ts: ZonedDateTime = ZonedDateTime.now()
+
     val state: State = mock[State]
-    doNothing.when(state).addEvent(any[Event])
+    doNothing.when(state).addBleedingEvent(any[Int], any[ZonedDateTime])
     when(state.getAverageCycleLength).thenReturn(0)
 
     val service = new Service(state)
+
   }
 
   "/events" must {
@@ -81,6 +88,24 @@ class ServiceTest
           status mustBe StatusCodes.OK
           responseAs[JsObject] mustBe JsObject("average_cycle" -> JsObject("length" -> JsNumber(0)))
         }
+    }
+  }
+
+  "Service" must {
+    "ignore non-bleeding events" in new BasicScenario {
+      Post(s"/events", Event(0, IncreasedFocus, ts)) ~> seal(service.routes)
+      Post(s"/events", Event(0, Cramps, ts)) ~> seal(service.routes)
+      Post(s"/events", Event(0, TenderBreasts, ts)) ~> seal(service.routes)
+
+      verify(state, never).addBleedingEvent(0, ts)
+    }
+
+    "add bleeding events" in new BasicScenario {
+      Post(s"/events", Event(0, LightBleeding, ts)) ~> seal(service.routes)
+      Post(s"/events", Event(0, MediumBleeding, ts)) ~> seal(service.routes)
+      Post(s"/events", Event(0, HeavyBleeding, ts)) ~> seal(service.routes)
+
+      verify(state, times(3)).addBleedingEvent(0, ts)
     }
   }
 

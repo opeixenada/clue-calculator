@@ -1,11 +1,11 @@
 package clue.calculator.state
 
-import clue.calculator.models.Event
+import java.time.ZonedDateTime
 
 /** Abstract representation of the service state */
 trait State {
-  /** Register new symptom event */
-  def addEvent(event: Event): Unit
+  /** Register new bleeding event */
+  def addBleedingEvent(userId: Int, timestamp: ZonedDateTime): Unit
 
   /** Retrieve average cycle length for all the users */
   def getAverageCycleLength: Double
