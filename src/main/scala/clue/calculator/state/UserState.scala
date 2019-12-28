@@ -2,7 +2,6 @@ package clue.calculator.state
 
 import java.time.ZonedDateTime
 
+/** State kept for each user */
 case class UserState(lastPeriodStart: Option[ZonedDateTime] = None,
-                     lastPeriodTracked: Option[ZonedDateTime] = None,
-                     cyclesCount: Int = 0,
-                     cyclesLengthSum: Long = 0)
+                     lastPeriodTracked: Option[ZonedDateTime] = None)

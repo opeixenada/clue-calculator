@@ -1,5 +1,6 @@
 package clue.calculator.state
 
+/** State kept for the entire service */
 case class InternalState(usersState: Map[Int, UserState] = Map.empty.withDefaultValue(UserState()),
                          cyclesCountAllUsers: Int = 0,
                          cyclesLengthSumAllUsers: Long = 0) {

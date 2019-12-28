@@ -3,7 +3,7 @@ package clue.calculator
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import clue.calculator.http.Service
-import clue.calculator.state.MapState
+import clue.calculator.state.InMemoryState
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -16,7 +16,7 @@ object Main extends App {
   implicit val actorSystem: ActorSystem = ActorSystem()
   implicit val ec: ExecutionContext = actorSystem.dispatcher
 
-  val state = new MapState()
+  val state = new InMemoryState()
 
   val service = new Service(state)
 
@@ -33,11 +33,16 @@ object Main extends App {
     }
   }
 
-  sys.addShutdownHook {
-    apiFuture
-      .flatMap(_.unbind())
-      .onComplete(_ => actorSystem.terminate())
+  locally {
+    println(s"Running service on $host:$port")
+
+    sys.addShutdownHook {
+      apiFuture
+        .flatMap(_.unbind())
+        .onComplete(_ => actorSystem.terminate())
+    }
+
+    exitOnFailure(apiFuture)
   }
 
-  exitOnFailure(apiFuture)
 }

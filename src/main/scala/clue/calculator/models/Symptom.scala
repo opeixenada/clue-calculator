@@ -14,13 +14,13 @@ object Symptom extends Enumeration {
   val Cramps = Value(5)
   val TenderBreasts = Value(6)
 
-  def isBleeding: Symptom.Value => Boolean = Seq(LightBleeding, MediumBleeding, HeavyBleeding).contains
+  def isBleeding: Symptom => Boolean = Seq(LightBleeding, MediumBleeding, HeavyBleeding).contains
 
-  implicit val fmt: JsonFormat[Symptom.Value] = new JsonFormat[Symptom.Value] {
+  implicit val fmt: JsonFormat[Symptom] = new JsonFormat[Symptom] {
 
-    override def write(obj: Symptom.Value): JsValue = JsNumber(obj.id)
+    override def write(obj: Symptom): JsValue = JsNumber(obj.id)
 
-    override def read(json: JsValue): Symptom.Value = {
+    override def read(json: JsValue): Symptom = {
       json match {
         case JsNumber(id) if id.isValidInt => try {
           Symptom(id.toInt)
