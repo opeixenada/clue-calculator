@@ -54,6 +54,23 @@ class ServiceTest
           status mustBe StatusCodes.BadRequest
         }
     }
+
+    "not accept an invalid symptom ID" in new BasicScenario {
+      private val validEvent =
+        s"""
+           |{
+           |  "user_id": 123456,
+           |  "symptom": 7,
+           |  "timestamp": "2017-04-23T18:25:43.511Z"
+           |}""".stripMargin
+
+
+      Post(s"/events", HttpEntity(ContentTypes.`application/json`, validEvent)) ~>
+        seal(service.routes) ~>
+        check {
+          status mustBe StatusCodes.BadRequest
+        }
+    }
   }
 
   "/cycles/average" must {

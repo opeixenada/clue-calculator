@@ -7,7 +7,7 @@ import spray.json.DefaultJsonProtocol._
 import spray.json.RootJsonFormat
 
 /** Event that is emitted when user records a new symptom */
-case class Event(user_id: Int, symptom: Int, timestamp: ZonedDateTime)
+case class Event(user_id: Int, symptom: Symptom.Value, timestamp: ZonedDateTime)
 
 object Event {
   implicit val fmt: RootJsonFormat[Event] = jsonFormat3(Event.apply)

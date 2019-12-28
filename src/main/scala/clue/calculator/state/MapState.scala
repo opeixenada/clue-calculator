@@ -3,7 +3,7 @@ package clue.calculator.state
 import java.time.temporal.ChronoUnit.DAYS
 
 import akka.Done
-import clue.calculator.models.{Event, isBleeding}
+import clue.calculator.models.{Event, Symptom}
 
 import scala.concurrent.Future
 
@@ -13,7 +13,7 @@ class MapState extends State {
 
   /** Register new symptom event */
   override def addEvent(event: Event): Unit = {
-    if (!isBleeding(event.symptom)) {
+    if (!Symptom.isBleeding(event.symptom)) {
       // ignore all the symptoms that are not bleeding
       Future.successful(Done)
     }
