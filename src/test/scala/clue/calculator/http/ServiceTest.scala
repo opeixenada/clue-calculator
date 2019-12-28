@@ -4,17 +4,27 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity, StatusCodes}
 import akka.http.scaladsl.server.Route.seal
 import akka.http.scaladsl.testkit.ScalatestRouteTest
+import clue.calculator.models.Event
+import clue.calculator.state.State
+import org.mockito.{ArgumentMatchersSugar, MockitoSugar}
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import spray.json.DefaultJsonProtocol._
 import spray.json.{JsNumber, JsObject}
 
-class ServiceTest extends AnyWordSpec
-  with Matchers
-  with ScalatestRouteTest {
+class ServiceTest
+  extends AnyWordSpec
+    with Matchers
+    with ScalatestRouteTest
+    with MockitoSugar
+    with ArgumentMatchersSugar {
 
   trait BasicScenario {
-    val service = new Service()
+    val state: State = mock[State]
+    doNothing.when(state).addEvent(any[Event])
+    when(state.getAverageCycleLength).thenReturn(0)
+
+    val service = new Service(state)
   }
 
   "/events" must {
@@ -31,7 +41,7 @@ class ServiceTest extends AnyWordSpec
       Post(s"/events", HttpEntity(ContentTypes.`application/json`, validEvent)) ~>
         seal(service.routes) ~>
         check {
-          status mustBe StatusCodes.OK
+          status mustBe StatusCodes.NoContent
         }
     }
 

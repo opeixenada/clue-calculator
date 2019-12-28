@@ -3,6 +3,7 @@ package clue.calculator
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import clue.calculator.http.Service
+import clue.calculator.state.MapState
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -15,7 +16,9 @@ object Main extends App {
   implicit val actorSystem: ActorSystem = ActorSystem()
   implicit val ec: ExecutionContext = actorSystem.dispatcher
 
-  val service = new Service()
+  val state = new MapState()
+
+  val service = new Service(state)
 
   val host = "0.0.0.0"
 
