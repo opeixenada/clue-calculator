@@ -10,5 +10,8 @@ val akkaVersion = "2.6.1"
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-stream" % akkaVersion,
   "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
-  "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion
+  "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
+  "org.scalatest" %% "scalatest" % "3.1.0" % "test",
+  "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion % "test",
+  "com.typesafe.akka" %% "akka-testkit" % akkaVersion % "test"
 )
